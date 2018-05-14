@@ -1,21 +1,22 @@
 project('lc0', 'cpp', default_options : ['cpp_std=c++14'])
 
-add_global_arguments('-Wthread-safety', language : 'cpp')
+add_global_arguments(language : 'cpp') # -Wthread-safety
 cc = meson.get_compiler('cpp')
 
 # Installed from https://github.com/FloopCZ/tensorflow_cc
 tensorflow_cc = declare_dependency(
   include_directories: include_directories(
     '/usr/local/include/tensorflow',
-    '/usr/local/include/tensorflow/bazel-genfiles',
+#    '/usr/local/include/tensorflow/bazel-genfiles',
     '/usr/local/include/tensorflow/tensorflow/contrib/makefile/downloads',
     '/usr/local/include/tensorflow/tensorflow/contrib/makefile/downloads/eigen',
     '/usr/local/include/tensorflow/tensorflow/contrib/makefile/downloads/gemmlowp',
     '/usr/local/include/tensorflow/tensorflow/contrib/makefile/downloads/nsync/public',
     '/usr/local/include/tensorflow/tensorflow/contrib/makefile/gen/protobuf-host/include',
+    '/usr/local/include/tensorflow/tensorflow/contrib/makefile/gen/host_obj',
   ),
   dependencies: [
-      cc.find_library('libtensorflow_cc', dirs: '/usr/local/lib/tensorflow_cc/'),
+      cc.find_library('libtensorflow-core', dirs: '/usr/local/lib/tensorflow_cc/'),
       cc.find_library('dl'),
       cc.find_library('pthread'),
       cc.find_library('libprotobuf', dirs: '/usr/local/lib/tensorflow_cc/'),
@@ -26,20 +27,20 @@ deps = []
 deps += tensorflow_cc
 deps += cc.find_library('stdc++fs')
 deps += cc.find_library('pthread')
-deps += cc.find_library('libcublas', dirs: ['/opt/cuda/lib64/', '/usr/local/cuda/lib64/'])
-deps += cc.find_library('libcudnn', dirs: ['/opt/cuda/lib64/', '/usr/local/cuda/lib64/'])
-deps += cc.find_library('libcudart', dirs: ['/opt/cuda/lib64/', '/usr/local/cuda/lib64/'])
+#deps += cc.find_library('libcublas', dirs: ['/opt/cuda/lib64/', '/usr/local/cuda/lib64/'])
+#deps += cc.find_library('libcudnn', dirs: ['/opt/cuda/lib64/', '/usr/local/cuda/lib64/'])
+#deps += cc.find_library('libcudart', dirs: ['/opt/cuda/lib64/', '/usr/local/cuda/lib64/'])
 # deps += cc.find_library('libprofiler', dirs: ['/usr/local/lib'])
 
-nvcc = find_program('nvcc')
-cuda_files = [
-  'src/neural/network_cudnn.cu',
-]
+#nvcc = find_program('nvcc')
+#cuda_files = [
+#  'src/neural/network_cudnn.cu',
+#]
 
-cuda_gen = generator(nvcc,
-    output: '@BASENAME@.o',
-    arguments: ['--std=c++14', '-c', '@INPUT@', '-o', '@OUTPUT@', '-I', '../src'],
-)
+#cuda_gen = generator(nvcc,
+#    output: '@BASENAME@.o',
+#    arguments: ['--std=c++14', '-c', '@INPUT@', '-o', '@OUTPUT@', '-I', '../src'],
+#)
 
 files = [
   'src/analyzer/analyzer.cc',
@@ -68,7 +69,7 @@ files = [
   'src/selfplay/game.cc',
   'src/selfplay/tournament.cc',
   'src/selfplay/loop.cc',
-  cuda_gen.process(cuda_files)
+#  cuda_gen.process(cuda_files)
 ]
 
 includes = []
